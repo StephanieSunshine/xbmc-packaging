@@ -2,10 +2,10 @@
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
-
+DEB_HOST_GNU_TYPE    ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_ARCH        ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_JETSON_TK1  ?= $(shell grep -oEm 1 jetson-tk1 /var/log/kern.log)
 # Set this variable to yes for release builds to disable debugging and enable
 # optimizations.
 KODI_RELEASE = yes
@@ -18,12 +18,15 @@ else
 endif
 
 # Enable gles for armel
-ifeq (,$(filter armel,$(DEB_HOST_ARCH)))
+ifeq (,$(filter armhf armel,$(DEB_HOST_ARCH)))
 GL_CONFIG_OPTIONS = --enable-gl --disable-gles
 else
 GL_CONFIG_OPTIONS = --disable-gl --enable-gles
 endif
 
+ifeq (jetson-tk1,$(DEB_HOST_JETSON_TK1)
+KODI_CONFIG_EXTRA_OPTIONS += --enable-neon --enable-openmax --enable-tegra --enable-ccache --enable-vtbdecoder --disable-vdpau --disable-vaapi
+endif
 # Various environment variables to set
 ENV_OPTIONS = CFLAGS="$(DEB_CFLAGS)" CXXFLAGS="$(DEB_CXXFLAGS)"
 
